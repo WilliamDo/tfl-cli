@@ -13,7 +13,7 @@ const (
 
 func main() {
 
-    printDepartureBoard("940GZZLUBKG", OUTBOUND)
+    // printDepartureBoard("940GZZLUBKG", OUTBOUND)
 	
 	printStatus()
 	
@@ -27,11 +27,12 @@ type Prediction struct {
 }
 
 type Line struct {
-	Name string
+	Name         string
 	LineStatuses []LineStatus
 }
 
 type LineStatus struct {
+	StatusSeverity            float64
 	StatusSeverityDescription string
 }
 
@@ -55,7 +56,11 @@ func printStatus() {
 	} 
 
 	for _, line := range lines {
-		fmt.Println("\u2713 ", line.Name, "\t", line.LineStatuses[0].StatusSeverityDescription)	
+		if line.LineStatuses[0].StatusSeverity == 10 {
+			fmt.Println("\u2713 ", line.Name, "\t", line.LineStatuses[0].StatusSeverityDescription)	
+		} else {
+			fmt.Println("\u2717 ", line.Name, "\t", line.LineStatuses[0].StatusSeverityDescription)
+		}
 	}
 }
 
