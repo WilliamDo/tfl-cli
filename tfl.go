@@ -5,6 +5,7 @@ import "net/http"
 import "io/ioutil"
 import "encoding/json"
 import "sort"
+import "os"
 
 const (
 	INBOUND  string = "inbound"
@@ -13,10 +14,21 @@ const (
 
 func main() {
 
-    // printDepartureBoard("940GZZLUBKG", OUTBOUND)
-	
-	printStatus()
-	
+	if len(os.Args) < 2 {
+		fmt.Println("not enough arguments")
+		os.Exit(1)
+	}
+
+	switch os.Args[1] {
+	case "status": 
+		printStatus()
+	case "board": 
+		printDepartureBoard("940GZZLUBKG", OUTBOUND)
+	default:
+		fmt.Println("expected 'status' or 'board' subcommands")
+		os.Exit(1)
+	}
+
     fmt.Printf("")
 }
 
@@ -37,7 +49,6 @@ type LineStatus struct {
 }
 
 func printStatus() {
-	//https://api.tfl.gov.uk/Line/Mode/tube/Status
 	resp, err := http.Get("https://api.tfl.gov.uk/Line/Mode/tube/Status")
     if err != nil {
 		// handle error
