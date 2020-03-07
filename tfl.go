@@ -103,3 +103,31 @@ func printDepartureBoard(naptanId string, direction string) {
 		}
 	}
 }
+
+type StopPoint struct {
+	NaptanId   string
+	CommonName string
+}
+
+func printNaptanIds(lineId string) {
+	resp, err := http.Get("https://api.tfl.gov.uk/Line/" + lineId + "/StopPoints")
+    if err != nil {
+		// handle error
+		fmt.Printf("error with http")
+		return
+    }
+    defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	
+	var stopPoints []StopPoint
+	jerr := json.Unmarshal(body, &stopPoints)
+
+	if jerr != nil {
+		fmt.Printf("error with unmarshalling response")
+		return
+	} 
+
+	for _, stop := range stopPoints {
+		fmt.Println(stop.NaptanId, stop.CommonName)
+	}
+}
