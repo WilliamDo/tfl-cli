@@ -57,9 +57,9 @@ func printStatus() {
 
 	for _, line := range lines {
 		if line.LineStatuses[0].StatusSeverity == 10 {
-			fmt.Println("\u2713 ", line.Name, "\t", line.LineStatuses[0].StatusSeverityDescription)	
+			fmt.Println("\u001b[32m\u2713\u001b[0m", line.Name, "\t", "\u001b[32m", line.LineStatuses[0].StatusSeverityDescription, "\u001b[0m")	
 		} else {
-			fmt.Println("\u2717 ", line.Name, "\t", line.LineStatuses[0].StatusSeverityDescription)
+			fmt.Println("\u001b[31m\u2717\u001b[0m", line.Name, "\t", "\u001b[31m", line.LineStatuses[0].StatusSeverityDescription, "\u001b[0m")
 		}
 	}
 }
