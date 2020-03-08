@@ -1,12 +1,14 @@
 package main
 
-import "fmt"
-import "net/http"
-import "io/ioutil"
-import "encoding/json"
-import "sort"
-import "os"
-import "flag"
+import (
+	"fmt"
+	"net/http"
+	"io/ioutil"
+	"encoding/json"
+	"sort"
+	"os"
+	"flag"
+)
 
 const (
 	INBOUND  string = "inbound"
