@@ -6,13 +6,26 @@ import "io/ioutil"
 import "encoding/json"
 import "sort"
 import "os"
+import "flag"
 
 const (
 	INBOUND  string = "inbound"
 	OUTBOUND string = "outbound"
 )
 
+// upney: 940GZZLUUPY
+// barking: 940GZZLUBKG
+
+var stations = map[string]string {
+	"upney":   "940GZZLUUPY",
+	"barking": "940GZZLUBKG",
+}
+
 func main() {
+
+	boardCmd := flag.NewFlagSet("board", flag.ExitOnError)
+	boardOutbound := boardCmd.Bool("outbound", false, "outbound")
+	boardInbound := boardCmd.Bool("inbound", false, "inbound")
 
 	if len(os.Args) < 2 {
 		fmt.Println("not enough arguments")
@@ -23,7 +36,14 @@ func main() {
 	case "status": 
 		printStatus()
 	case "board": 
-		printDepartureBoard("940GZZLUBKG", OUTBOUND)
+		boardCmd.Parse(os.Args[2:])
+		if *boardOutbound {
+			printDepartureBoard("940GZZLUBKG", OUTBOUND)
+		}
+
+		if *boardInbound {
+			printDepartureBoard("940GZZLUBKG", INBOUND)
+		}
 	default:
 		fmt.Println("expected 'status' or 'board' subcommands")
 		os.Exit(1)
