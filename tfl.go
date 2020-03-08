@@ -26,6 +26,7 @@ func main() {
 	boardCmd := flag.NewFlagSet("board", flag.ExitOnError)
 	boardOutbound := boardCmd.Bool("outbound", false, "outbound")
 	boardInbound := boardCmd.Bool("inbound", false, "inbound")
+	boardStation := boardCmd.String("station", "", "station")
 
 	if len(os.Args) < 2 {
 		fmt.Println("not enough arguments")
@@ -37,12 +38,18 @@ func main() {
 		printStatus()
 	case "board": 
 		boardCmd.Parse(os.Args[2:])
+
+		if *boardStation == "" {
+			fmt.Println("board information needs a station")
+			os.Exit(1)
+		}
+
 		if *boardOutbound {
-			printDepartureBoard("940GZZLUBKG", OUTBOUND)
+			printDepartureBoard(stations[*boardStation], OUTBOUND)
 		}
 
 		if *boardInbound {
-			printDepartureBoard("940GZZLUBKG", INBOUND)
+			printDepartureBoard(stations[*boardStation], INBOUND)
 		}
 	default:
 		fmt.Println("expected 'status' or 'board' subcommands")
