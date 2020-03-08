@@ -2,7 +2,13 @@ package main
 
 import "testing"
 
-func TestFoo(t *testing.T) {
-	printNaptanIds("district")
-	t.Errorf("test does nothing")
+func TestFindLine(t *testing.T) {
+	filtered, _ := findLine([]Line{
+		{ Name: "district" },
+		{ Name: "central" },
+	}, "district")
+
+	if filtered.Name != "district" {
+		t.Fail()
+	}
 }

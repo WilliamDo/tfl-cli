@@ -8,6 +8,7 @@ import (
 	"sort"
 	"os"
 	"flag"
+	"errors"
 )
 
 const (
@@ -102,6 +103,16 @@ func printStatus() {
 			fmt.Println("\u001b[31m\u2717\u001b[0m", line.Name, "\t", "\u001b[31m", line.LineStatuses[0].StatusSeverityDescription, "\u001b[0m")
 		}
 	}
+}
+
+func findLine(lines []Line, name string) (Line, error) {
+	for _, line := range lines {
+		if line.Name == name {
+			return line, nil
+		}
+	}
+
+	return Line{}, errors.New("could not find the line")
 }
 
 func printDepartureBoard(naptanId string, direction string) {
