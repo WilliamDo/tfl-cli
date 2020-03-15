@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"io"
 	"io/ioutil"
 	"encoding/json"
 	"sort"
@@ -24,12 +25,16 @@ var stations = map[string]string {
 	"barking": "940GZZLUBKG",
 }
 
+
+
 func main() {
 
 	boardCmd := flag.NewFlagSet("board", flag.ExitOnError)
 	boardOutbound := boardCmd.Bool("outbound", false, "outbound")
 	boardInbound := boardCmd.Bool("inbound", false, "inbound")
 	boardStation := boardCmd.String("station", "", "station")
+
+	out := os.Stdout
 
 	if len(os.Args) < 2 {
 		fmt.Println("not enough arguments")
@@ -38,7 +43,7 @@ func main() {
 
 	switch os.Args[1] {
 	case "status": 
-		printStatus()
+		getAndPrintStatus(out)
 	case "board": 
 		boardCmd.Parse(os.Args[2:])
 
@@ -78,11 +83,11 @@ type LineStatus struct {
 	StatusSeverityDescription string
 }
 
-func printStatus() {
+func getAndPrintStatus(out io.Writer) {
 	resp, err := http.Get("https://api.tfl.gov.uk/Line/Mode/tube/Status")
     if err != nil {
 		// handle error
-		fmt.Printf("error with http")
+		fmt.Fprintf(out, "error with http")
 		return
     }
     defer resp.Body.Close()
@@ -92,15 +97,20 @@ func printStatus() {
     jerr := json.Unmarshal(body, &lines)
 
     if jerr != nil {
-		fmt.Printf("error with unmarshalling response")
+		fmt.Fprintf(out, "error with unmarshalling response")
 		return
 	} 
 
+	printStatus(out, lines)
+
+}
+
+func printStatus(out io.Writer, lines []Line) {
 	for _, line := range lines {
 		if line.LineStatuses[0].StatusSeverity == 10 {
-			fmt.Println("\u001b[32m\u2713\u001b[0m", line.Name, "\t", "\u001b[32m", line.LineStatuses[0].StatusSeverityDescription, "\u001b[0m")	
+			fmt.Fprintf(out, "\u001b[32m\u2713\u001b[0m %s\t\u001b[32m%s\u001b[0m\n", line.Name, line.LineStatuses[0].StatusSeverityDescription)	
 		} else {
-			fmt.Println("\u001b[31m\u2717\u001b[0m", line.Name, "\t", "\u001b[31m", line.LineStatuses[0].StatusSeverityDescription, "\u001b[0m")
+			fmt.Fprintf(out, "\u001b[31m\u2717\u001b[0m %s\t\u001b[31m%s\u001b[0m\n", line.Name, line.LineStatuses[0].StatusSeverityDescription)
 		}
 	}
 }
