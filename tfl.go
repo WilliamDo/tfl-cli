@@ -34,6 +34,9 @@ func main() {
 	boardInbound := boardCmd.Bool("inbound", false, "inbound")
 	boardStation := boardCmd.String("station", "", "station")
 
+	statusCmd := flag.NewFlagSet("status", flag.ExitOnError)
+	statusLine := statusCmd.String("line", "", "line")
+
 	out := os.Stdout
 
 	if len(os.Args) < 2 {
@@ -43,7 +46,8 @@ func main() {
 
 	switch os.Args[1] {
 	case "status": 
-		getAndPrintStatus(out)
+		statusCmd.Parse(os.Args[2:])
+		getAndPrintStatus(out, *statusLine)
 	case "board": 
 		boardCmd.Parse(os.Args[2:])
 
@@ -63,8 +67,6 @@ func main() {
 		fmt.Println("expected 'status' or 'board' subcommands")
 		os.Exit(1)
 	}
-
-    fmt.Printf("")
 }
 
 type Prediction struct {
@@ -74,6 +76,7 @@ type Prediction struct {
 }
 
 type Line struct {
+	Id           string
 	Name         string
 	LineStatuses []LineStatus
 }
@@ -83,11 +86,11 @@ type LineStatus struct {
 	StatusSeverityDescription string
 }
 
-func getAndPrintStatus(out io.Writer) {
+func getAndPrintStatus(out io.Writer, lineFilter string) {
 	resp, err := http.Get("https://api.tfl.gov.uk/Line/Mode/tube/Status")
     if err != nil {
 		// handle error
-		fmt.Fprintf(out, "error with http")
+		fmt.Fprintf(out, "error with http\n")
 		return
     }
     defer resp.Body.Close()
@@ -97,11 +100,20 @@ func getAndPrintStatus(out io.Writer) {
     jerr := json.Unmarshal(body, &lines)
 
     if jerr != nil {
-		fmt.Fprintf(out, "error with unmarshalling response")
+		fmt.Fprintf(out, "error with unmarshalling response\n")
 		return
 	} 
 
-	printStatus(out, lines)
+	if lineFilter == "" {
+		printStatus(out, lines)
+	} else {
+		line, err := findLine(lines, lineFilter)
+		if err != nil {
+			fmt.Fprintf(out, "unrecognised line filter\n")
+		} else {
+			printStatus(out, []Line{ line })
+		}
+	}
 
 }
 
@@ -115,9 +127,9 @@ func printStatus(out io.Writer, lines []Line) {
 	}
 }
 
-func findLine(lines []Line, name string) (Line, error) {
+func findLine(lines []Line, lineId string) (Line, error) {
 	for _, line := range lines {
-		if line.Name == name {
+		if line.Id == lineId {
 			return line, nil
 		}
 	}

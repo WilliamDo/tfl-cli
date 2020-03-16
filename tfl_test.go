@@ -7,11 +7,11 @@ import (
 
 func TestFindLine(t *testing.T) {
 	filtered, _ := findLine([]Line{
-		{ Name: "district" },
-		{ Name: "central" },
+		{ Id: "district" },
+		{ Id: "central" },
 	}, "district")
 
-	if filtered.Name != "district" {
+	if filtered.Id != "district" {
 		t.Fail()
 	}
 }
