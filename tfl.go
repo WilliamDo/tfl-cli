@@ -10,6 +10,7 @@ import (
 	"os"
 	"flag"
 	"errors"
+	"text/tabwriter"
 )
 
 const (
@@ -118,13 +119,19 @@ func getAndPrintStatus(out io.Writer, lineFilter string) {
 }
 
 func printStatus(out io.Writer, lines []Line) {
+
+	const padding = 3
+	w := tabwriter.NewWriter(out, 0, 0, padding, '.', 0)
+
 	for _, line := range lines {
 		if line.LineStatuses[0].StatusSeverity == 10 {
-			fmt.Fprintf(out, "\u001b[32m\u2713\u001b[0m %s\t\u001b[32m%s\u001b[0m\n", line.Name, line.LineStatuses[0].StatusSeverityDescription)	
+			fmt.Fprintf(w, "\u001b[32m\u2713\u001b[0m %s\t\u001b[32m%s\u001b[0m\n", line.Name, line.LineStatuses[0].StatusSeverityDescription)	
 		} else {
-			fmt.Fprintf(out, "\u001b[31m\u2717\u001b[0m %s\t\u001b[31m%s\u001b[0m\n", line.Name, line.LineStatuses[0].StatusSeverityDescription)
+			fmt.Fprintf(w, "\u001b[31m\u2717\u001b[0m %s\t\u001b[31m%s\u001b[0m\n", line.Name, line.LineStatuses[0].StatusSeverityDescription)
 		}
 	}
+
+	w.Flush()
 }
 
 func findLine(lines []Line, lineId string) (Line, error) {
