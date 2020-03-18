@@ -173,7 +173,7 @@ func getAndPrintDepartureBoard(out io.Writer, naptanId string, direction string)
 func printDepartureBoard(out io.Writer, predictions []Prediction, direction string) {
 	for _, train := range predictions {
 		if train.Direction == direction {
-			fmt.Fprintln(out, train.Towards, "\t", train.TimeToStation / 60)
+			fmt.Fprintf(out, "%s\t%.1f", train.Towards, train.TimeToStation / 60)
 		}
 	}
 }
