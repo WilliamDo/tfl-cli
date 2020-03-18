@@ -61,7 +61,7 @@ func TestPrintStatusForDelayStatus(t *testing.T) {
 
 func TestPrintDepartureBoard(t *testing.T) {
 	buffer := new(bytes.Buffer)
-	printDepartureBoard([]Prediction {
+	printDepartureBoard(buffer, []Prediction {
 		{ Towards: "destination", Direction: "inbound", TimeToStation: 0 },
 	}, "inbound")
 

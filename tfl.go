@@ -58,11 +58,11 @@ func main() {
 		}
 
 		if *boardOutbound {
-			printDepartureBoard(stations[*boardStation], OUTBOUND)
+			getAndPrintDepartureBoard(out, stations[*boardStation], OUTBOUND)
 		}
 
 		if *boardInbound {
-			printDepartureBoard(stations[*boardStation], INBOUND)
+			getAndPrintDepartureBoard(out, stations[*boardStation], INBOUND)
 		}
 	default:
 		fmt.Println("expected 'status' or 'board' subcommands")
@@ -144,7 +144,7 @@ func findLine(lines []Line, lineId string) (Line, error) {
 	return Line{}, errors.New("could not find the line")
 }
 
-func printDepartureBoard(naptanId string, direction string) {
+func getAndPrintDepartureBoard(out io.Writer, naptanId string, direction string) {
     resp, err := http.Get("https://api.tfl.gov.uk/Line/district/Arrivals/" + naptanId)
     if err != nil {
 		// handle error
@@ -166,9 +166,14 @@ func printDepartureBoard(naptanId string, direction string) {
 		return predictions[i].TimeToStation < predictions[j].TimeToStation
 	})
 
+	printDepartureBoard(out, predictions, direction)
+
+}
+
+func printDepartureBoard(out io.Writer, predictions []Prediction, direction string) {
 	for _, train := range predictions {
 		if train.Direction == direction {
-			fmt.Println(train.Towards, "\t", train.TimeToStation / 60)
+			fmt.Fprintln(out, train.Towards, "\t", train.TimeToStation / 60)
 		}
 	}
 }
