@@ -177,7 +177,7 @@ func printDepartureBoard(out io.Writer, predictions []Prediction, direction stri
 
 	for _, train := range predictions {
 		if train.Direction == direction {
-			fmt.Fprintf(w, "%s\t%.1f", train.Towards, train.TimeToStation / 60)
+			fmt.Fprintf(w, "%s\t%.1f\n", train.Towards, train.TimeToStation / 60)
 		}
 	}
 

@@ -62,10 +62,11 @@ func TestPrintStatusForDelayStatus(t *testing.T) {
 func TestPrintDepartureBoard(t *testing.T) {
 	buffer := new(bytes.Buffer)
 	printDepartureBoard(buffer, []Prediction {
-		{ Towards: "destination", Direction: "inbound", TimeToStation: 0 },
+		{ Towards: "destination", Direction: "inbound", TimeToStation: 60 },
+		{ Towards: "destination", Direction: "inbound", TimeToStation: 90 },
 	}, "inbound")
 
-	expected := "destination...0.0"
+	expected := "destination...1.0\ndestination...1.5\n"
 	if buffer.String() != expected {
 		t.Errorf("want %s; got %s", expected, buffer.String())
 	}
