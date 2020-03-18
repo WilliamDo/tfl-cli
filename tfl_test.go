@@ -65,7 +65,7 @@ func TestPrintDepartureBoard(t *testing.T) {
 		{ Towards: "destination", Direction: "inbound", TimeToStation: 0 },
 	}, "inbound")
 
-	expected := "destination\t0.0"
+	expected := "destination...0.0"
 	if buffer.String() != expected {
 		t.Errorf("want %s; got %s", expected, buffer.String())
 	}

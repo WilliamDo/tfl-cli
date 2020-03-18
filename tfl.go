@@ -171,11 +171,17 @@ func getAndPrintDepartureBoard(out io.Writer, naptanId string, direction string)
 }
 
 func printDepartureBoard(out io.Writer, predictions []Prediction, direction string) {
+
+	const padding = 3
+	w := tabwriter.NewWriter(out, 0, 0, padding, '.', 0)
+
 	for _, train := range predictions {
 		if train.Direction == direction {
-			fmt.Fprintf(out, "%s\t%.1f", train.Towards, train.TimeToStation / 60)
+			fmt.Fprintf(w, "%s\t%.1f", train.Towards, train.TimeToStation / 60)
 		}
 	}
+
+	w.Flush()
 }
 
 type StopPoint struct {
