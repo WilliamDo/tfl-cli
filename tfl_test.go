@@ -36,7 +36,7 @@ func TestPrintStatusForGoodStatus(t *testing.T) {
 		},
 	})
 
-	expected := "\u001b[32m\u2713\u001b[0m district...\u001b[32mvery good\u001b[0m\n"
+	expected := "\u001b[32m\u2713\u001b[0m district...\u001b[32m[very good]\u001b[0m\n"
 	if buffer.String() != expected {
 		t.Errorf("want %s; got %s", expected, buffer.String())
 	}
@@ -53,7 +53,25 @@ func TestPrintStatusForDelayStatus(t *testing.T) {
 		},
 	})
 
-	expected := "\u001b[31m\u2717\u001b[0m district...\u001b[31mnot good\u001b[0m\n"
+	expected := "\u001b[31m\u2717\u001b[0m district...\u001b[31m[not good]\u001b[0m\n"
+	if buffer.String() != expected {
+		t.Errorf("want %s; got %s", expected, buffer.String())
+	}
+}
+
+func TestPrintStatusForMultipleStatus(t *testing.T) {
+	buffer := new(bytes.Buffer)
+	printStatus(buffer, []Line{
+		{ 
+			Name: "district", 
+			LineStatuses: []LineStatus{
+				{ StatusSeverity: 10, StatusSeverityDescription: "very good" },
+				{ StatusSeverity: 10, StatusSeverityDescription: "maybe good" },
+			},
+		},
+	})
+
+	expected := "\u001b[32m\u2713\u001b[0m district...\u001b[32m[very good, maybe good]\u001b[0m\n"
 	if buffer.String() != expected {
 		t.Errorf("want %s; got %s", expected, buffer.String())
 	}

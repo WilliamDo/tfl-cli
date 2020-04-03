@@ -124,14 +124,33 @@ func printStatus(out io.Writer, lines []Line) {
 	w := tabwriter.NewWriter(out, 0, 0, padding, '.', 0)
 
 	for _, line := range lines {
-		if line.LineStatuses[0].StatusSeverity == 10 {
-			fmt.Fprintf(w, "\u001b[32m\u2713\u001b[0m %s\t\u001b[32m%s\u001b[0m\n", line.Name, line.LineStatuses[0].StatusSeverityDescription)	
+		concatenatedStatus, statusOk := concatStatus(line.LineStatuses)
+		if statusOk {
+			fmt.Fprintf(w, "\u001b[32m\u2713\u001b[0m %s\t\u001b[32m[%s]\u001b[0m\n", line.Name, concatenatedStatus)	
 		} else {
-			fmt.Fprintf(w, "\u001b[31m\u2717\u001b[0m %s\t\u001b[31m%s\u001b[0m\n", line.Name, line.LineStatuses[0].StatusSeverityDescription)
+			fmt.Fprintf(w, "\u001b[31m\u2717\u001b[0m %s\t\u001b[31m[%s]\u001b[0m\n", line.Name, concatenatedStatus)
 		}
 	}
 
 	w.Flush()
+}
+
+func concatStatus(statuses []LineStatus) (string, bool) {
+	statusOk := true
+	statusDescription := ""
+	for index, status := range statuses {
+		if status.StatusSeverity == 10 {
+	
+		} else {
+			statusOk = false
+		}
+		if index > 0 {
+			statusDescription = statusDescription + ", "
+		}
+		statusDescription = statusDescription + status.StatusSeverityDescription
+	}
+
+	return statusDescription, statusOk
 }
 
 func findLine(lines []Line, lineId string) (Line, error) {
