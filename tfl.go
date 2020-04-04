@@ -164,7 +164,7 @@ func findLine(lines []Line, lineId string) (Line, error) {
 }
 
 func getAndPrintDepartureBoard(out io.Writer, naptanId string, direction string) {
-    resp, err := http.Get("https://api.tfl.gov.uk/Line/district/Arrivals/" + naptanId)
+    resp, err := http.Get("https://api.tfl.gov.uk/StopPoint/" + naptanId + "/Arrivals")
     if err != nil {
 		// handle error
 		fmt.Printf("error with http")
