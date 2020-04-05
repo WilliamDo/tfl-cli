@@ -71,7 +71,7 @@ func main() {
 		stationCmd.Parse(os.Args[2:])
 
 		if *stationList {
-			printNaptanIds("district")
+			printNaptanIds()
 		}
 	default:
 		fmt.Println("expected 'status' or 'board' subcommands")
@@ -212,14 +212,17 @@ func printDepartureBoard(out io.Writer, predictions []Prediction, direction stri
 	w.Flush()
 }
 
+type StopPointsResponse struct {
+	StopPoints []StopPoint
+}
+
 type StopPoint struct {
 	NaptanId   string
 	CommonName string
 }
 
-func printNaptanIds(lineId string) {
-	//https://api.tfl.gov.uk/StopPoint/Type/NaptanMetroStation
-	resp, err := http.Get("https://api.tfl.gov.uk/Line/" + lineId + "/StopPoints")
+func printNaptanIds() {
+	resp, err := http.Get("https://api.tfl.gov.uk/StopPoint/Mode/tube")
     if err != nil {
 		// handle error
 		fmt.Printf("error with http")
@@ -228,15 +231,15 @@ func printNaptanIds(lineId string) {
     defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	
-	var stopPoints []StopPoint
-	jerr := json.Unmarshal(body, &stopPoints)
+	var stopPointsResponse StopPointsResponse
+	jerr := json.Unmarshal(body, &stopPointsResponse)
 
 	if jerr != nil {
 		fmt.Printf("error with unmarshalling response")
 		return
 	} 
 
-	for _, stop := range stopPoints {
+	for _, stop := range stopPointsResponse.StopPoints {
 		fmt.Println(stop.NaptanId, stop.CommonName)
 	}
 }
