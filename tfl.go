@@ -71,7 +71,7 @@ func main() {
 		stationCmd.Parse(os.Args[2:])
 
 		if *stationList {
-			printNaptanIds()
+			printNaptanIds(out)
 		}
 	default:
 		fmt.Println("expected 'status' or 'board' subcommands")
@@ -221,7 +221,7 @@ type StopPoint struct {
 	CommonName string
 }
 
-func printNaptanIds() {
+func printNaptanIds(out io.Writer) {
 	resp, err := http.Get("https://api.tfl.gov.uk/StopPoint/Mode/tube")
     if err != nil {
 		// handle error
@@ -239,7 +239,12 @@ func printNaptanIds() {
 		return
 	} 
 
+	const padding = 3
+	w := tabwriter.NewWriter(out, 0, 0, padding, '.', 0)
+
 	for _, stop := range stopPointsResponse.StopPoints {
-		fmt.Println(stop.NaptanId, stop.CommonName)
+		fmt.Fprintf(w, "%s\t%s\n", stop.NaptanId, stop.CommonName)
 	}
+
+	w.Flush()
 }
