@@ -38,6 +38,9 @@ func main() {
 	statusCmd := flag.NewFlagSet("status", flag.ExitOnError)
 	statusLine := statusCmd.String("line", "", "line")
 
+	stationCmd := flag.NewFlagSet("station", flag.ExitOnError)
+	stationList := stationCmd.Bool("list", false, "list")
+
 	out := os.Stdout
 
 	if len(os.Args) < 2 {
@@ -63,6 +66,12 @@ func main() {
 
 		if *boardInbound {
 			getAndPrintDepartureBoard(out, stations[*boardStation], INBOUND)
+		}
+	case "station":
+		stationCmd.Parse(os.Args[2:])
+
+		if *stationList {
+			printNaptanIds("district")
 		}
 	default:
 		fmt.Println("expected 'status' or 'board' subcommands")
@@ -209,6 +218,7 @@ type StopPoint struct {
 }
 
 func printNaptanIds(lineId string) {
+	//https://api.tfl.gov.uk/StopPoint/Type/NaptanMetroStation
 	resp, err := http.Get("https://api.tfl.gov.uk/Line/" + lineId + "/StopPoints")
     if err != nil {
 		// handle error
