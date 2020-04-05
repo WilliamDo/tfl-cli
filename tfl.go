@@ -18,22 +18,12 @@ const (
 	OUTBOUND string = "outbound"
 )
 
-// upney: 940GZZLUUPY
-// barking: 940GZZLUBKG
-
-var stations = map[string]string {
-	"upney":   "940GZZLUUPY",
-	"barking": "940GZZLUBKG",
-}
-
-
-
 func main() {
 
 	boardCmd := flag.NewFlagSet("board", flag.ExitOnError)
 	boardOutbound := boardCmd.Bool("outbound", false, "outbound")
 	boardInbound := boardCmd.Bool("inbound", false, "inbound")
-	boardStation := boardCmd.String("station", "", "station")
+	boardNaptanId := boardCmd.String("naptanId", "", "naptanId")
 
 	statusCmd := flag.NewFlagSet("status", flag.ExitOnError)
 	statusLine := statusCmd.String("line", "", "line")
@@ -55,17 +45,17 @@ func main() {
 	case "board": 
 		boardCmd.Parse(os.Args[2:])
 
-		if *boardStation == "" {
+		if *boardNaptanId == "" {
 			fmt.Println("board information needs a station")
 			os.Exit(1)
 		}
 
 		if *boardOutbound {
-			getAndPrintDepartureBoard(out, stations[*boardStation], OUTBOUND)
+			getAndPrintDepartureBoard(out, *boardNaptanId, OUTBOUND)
 		}
 
 		if *boardInbound {
-			getAndPrintDepartureBoard(out, stations[*boardStation], INBOUND)
+			getAndPrintDepartureBoard(out, *boardNaptanId, INBOUND)
 		}
 	case "station":
 		stationCmd.Parse(os.Args[2:])
